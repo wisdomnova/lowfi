@@ -1,0 +1,172 @@
+
+> lowfi@0.1.0 build
+> next build
+
+▲ Next.js 16.1.4 (Turbopack)
+- Environments: .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 9.3s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+STRIPE_WEBHOOK_SECRET is not set - webhooks will not work
+  Generating static pages using 7 workers (0/67) ...
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/campaigns/create. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+  Generating static pages using 7 workers (16/67) 
+STRIPE_WEBHOOK_SECRET is not set - webhooks will not work
+⚠ Unsupported metadata viewport is configured in metadata export in /auth/forgot-password. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+  Generating static pages using 7 workers (33/67) 
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/followups/history. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /auth/signin. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/followups. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /auth/signup. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/campaigns. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /auth/reset-password. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/billing/callback. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/billing. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/activity. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/invoices. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/profile. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/phase2-features. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+  Generating static pages using 7 workers (50/67) 
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/settings. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/templates/create. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/templates. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/tickets. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/reports. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /legal/cookies. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /dashboard/team. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /legal/gdpr. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /legal/privacy. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /legal/terms. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /security. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+✓ Generating static pages using 7 workers (67/67) in 1673.5ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/activity
+├ ƒ /api/auth/reset-password
+├ ƒ /api/auth/session
+├ ƒ /api/auth/signin
+├ ƒ /api/auth/signout
+├ ƒ /api/auth/signup
+├ ƒ /api/auth/welcome
+├ ƒ /api/campaign-sequences/[sequenceId]
+├ ƒ /api/campaigns
+├ ƒ /api/campaigns/[id]
+├ ƒ /api/campaigns/[id]/[action]
+├ ƒ /api/campaigns/[id]/ab-tests
+├ ƒ /api/campaigns/[id]/approvals
+├ ƒ /api/campaigns/[id]/automations
+├ ƒ /api/campaigns/[id]/compliance
+├ ƒ /api/campaigns/[id]/detailed-analytics
+├ ƒ /api/campaigns/[id]/email-content
+├ ƒ /api/campaigns/[id]/recipients
+├ ƒ /api/campaigns/[id]/schedule
+├ ƒ /api/campaigns/[id]/sequences
+├ ƒ /api/campaigns/metrics
+├ ƒ /api/checkout/session
+├ ƒ /api/dashboard/export
+├ ƒ /api/dashboard/metrics
+├ ƒ /api/dashboard/stats
+├ ƒ /api/followups
+├ ƒ /api/followups/[id]
+├ ƒ /api/inngest
+├ ƒ /api/integrations
+├ ƒ /api/invoices
+├ ƒ /api/invoices/[id]
+├ ƒ /api/invoices/extract
+├ ƒ /api/notifications
+├ ƒ /api/notifications/[id]
+├ ƒ /api/plans
+├ ƒ /api/profile
+├ ƒ /api/reports
+├ ƒ /api/settings
+├ ƒ /api/settings/blacklist
+├ ƒ /api/settings/domains/verify
+├ ƒ /api/subscriptions/current
+├ ƒ /api/team
+├ ƒ /api/team/[id]
+├ ƒ /api/team/roles
+├ ƒ /api/templates
+├ ƒ /api/templates/[id]
+├ ƒ /api/templates/preview
+├ ƒ /api/tickets
+├ ƒ /api/tickets/[id]
+├ ƒ /api/tickets/[id]/respond
+├ ƒ /api/track/click
+├ ƒ /api/track/open
+├ ƒ /api/webhooks/email
+├ ƒ /api/webhooks/sendgrid
+├ ƒ /api/webhooks/stripe
+├ ƒ /auth/callback
+├ ○ /auth/forgot-password
+├ ○ /auth/reset-password
+├ ○ /auth/signin
+├ ○ /auth/signup
+├ ○ /dashboard
+├ ○ /dashboard/activity
+├ ○ /dashboard/billing
+├ ○ /dashboard/billing/callback
+├ ○ /dashboard/campaigns
+├ ƒ /dashboard/campaigns/[id]
+├ ƒ /dashboard/campaigns/[id]/edit
+├ ƒ /dashboard/campaigns/[id]/sequences
+├ ○ /dashboard/campaigns/create
+├ ○ /dashboard/followups
+├ ○ /dashboard/followups/history
+├ ○ /dashboard/invoices
+├ ○ /dashboard/phase2-features
+├ ○ /dashboard/profile
+├ ○ /dashboard/reports
+├ ○ /dashboard/settings
+├ ○ /dashboard/team
+├ ○ /dashboard/templates
+├ ○ /dashboard/templates/create
+├ ○ /dashboard/tickets
+├ ○ /legal/cookies
+├ ○ /legal/gdpr
+├ ○ /legal/privacy
+├ ○ /legal/terms
+└ ○ /security
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
