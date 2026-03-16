@@ -1,0 +1,537 @@
+// Prisma schema for LowFi.app
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  password      String
+  name          String?
+  phone         String?
+  location      String?
+  avatarUrl     String?
+  company       Company?
+  invoices      Invoice[]
+  followUps     FollowUp[]
+  tickets       Ticket[]
+  teamMembers   TeamMember[]
+  notifications Notification[]
+  settings      UserSettings?
+  subscription  Subscription?
+  activities    Activity[]
+  campaigns     Campaign[]
+  emailTemplates EmailTemplate[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("users")
+}
+
+model Company {
+  id          String        @id @default(cuid())
+  ownerId     String        @unique
+  owner       User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name        String
+  settings    Json          @default("{}")
+  teamMembers TeamMember[]
+  domains     Domain[]
+  blacklist   GlobalBlacklist[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("companies")
+}
+
+model Domain {
+  id              String   @id @default(cuid())
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  domain          String
+  isVerified      Boolean  @default(false)
+  spfStatus       String   @default("pending") // pending, active, invalid
+  dkimStatus      String   @default("pending")
+  dmarcStatus     String   @default("pending")
+  lastCheckedAt   DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([companyId, domain])
+  @@map("domains")
+}
+
+model GlobalBlacklist {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  email       String
+  reason      String?  // manual, unsubscribed, bounce, etc.
+  createdAt   DateTime @default(now())
+
+  @@unique([companyId, email])
+  @@index([companyId])
+  @@index([email])
+  @@map("global_blacklist")
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  filename      String
+  originalText  String
+  extractedData Json
+  status        String   @default("pending") // pending, reviewed, approved
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("invoices")
+}
+
+model FollowUp {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoiceId String?
+  customerId String
+  draftEmail String
+  status    String   @default("draft") // draft, sent, replied
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("follow_ups")
+}
+
+model Ticket {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailFrom  String
+  subject    String
+  body       String
+  category   String   @default("other")
+  aiResponse String?
+  status     String   @default("open")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("tickets")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role      String   @default("member") // admin, manager, member
+  status    String   @default("active") // active, pending, inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, companyId])
+  @@map("team_members")
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   @default("info") // info, success, warning, error
+  title       String
+  description String?
+  read        Boolean  @default(false)
+  actionUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}
+
+model UserSettings {
+  id                    String  @id @default(cuid())
+  userId                String  @unique
+  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailNotifications    Boolean @default(true)
+  notificationFrequency String  @default("daily") // immediate, daily, weekly
+  marketingEmails       Boolean @default(false)
+  productUpdates        Boolean @default(true)
+  theme                 String  @default("light") // light, dark, auto
+  twoFactorEnabled      Boolean @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("user_settings")
+}
+model Subscription {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan              String   @default("starter") // starter, professional, enterprise
+  status            String   @default("active") // active, cancelled, past_due, paused
+  billingCycle      String   @default("monthly") // monthly, yearly
+  currentPeriodStart DateTime
+  currentPeriodEnd  DateTime
+  cancelledAt       DateTime?
+  stripeCustomerId  String?  // For Stripe integration
+  stripeSubscriptionId String? // For Stripe integration
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("subscriptions")
+}
+
+model Activity {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action        String   // create, update, delete, send, etc
+  resourceType  String   // invoice, ticket, followup, campaign, etc
+  resourceId    String
+  details       Json     @default("{}")
+  timestamp     DateTime @default(now())
+
+  @@index([userId])
+  @@index([timestamp])
+  @@index([resourceType])
+  @@map("activities")
+}
+
+model Campaign {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  subject         String
+  body            String
+  status          String   @default("draft") // draft, queued, scheduled, sending, completed, paused, stopped
+  isSequence      Boolean  @default(false)
+  sequenceType    String?  // sequential, branching, conditional
+  scheduledAt     DateTime?
+  sentCount       Int      @default(0)
+  deliveredCount  Int      @default(0)
+  openedCount     Int      @default(0)
+  clickedCount    Int      @default(0)
+  repliedCount    Int      @default(0)
+  pausedAt        DateTime?
+  stoppedAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  sequences       CampaignSequence[]
+  statusHistory   CampaignStatusHistory[]
+  sends           CampaignSendUpdated[] @relation("CampaignSends")
+  recipients      CampaignRecipient[] @relation("CampaignRecipients")
+  abTests         ABTest[] @relation("ABTests")
+  automations     CampaignAutomation[] @relation("Automations")
+  schedules       CampaignSchedule[] @relation("Schedules")
+  emailContents   EmailContent[] @relation("EmailContents")
+  analytics       CampaignAnalytics[] @relation("Analytics")
+  approvals       CampaignApproval[] @relation("Approvals")
+  metrics         CampaignMetrics[] @relation("Metrics")
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("campaigns")
+}
+
+model CampaignSequence {
+  id             String   @id @default(cuid())
+  campaignId     String
+  campaign       Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  sequenceNumber Int      // 1, 2, 3, etc
+  subject        String
+  body           String
+  delayDays      Int      @default(0)
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([campaignId, sequenceNumber])
+  @@map("campaign_sequences")
+}
+
+model CampaignStatusHistory {
+  id         String   @id @default(cuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  status     String
+  reason     String?
+  userId     String
+  createdAt  DateTime @default(now())
+
+  @@index([campaignId])
+  @@map("campaign_status_history")
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  subject   String
+  body      String
+  category  String   @default("general")
+  variables String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([category])
+  @@map("email_templates")
+}
+
+
+
+model Customer {
+  id                String   @id @default(cuid())
+  userId            String
+  email             String
+  name              String?
+  company           String?
+  unsubscribed      Boolean  @default(false)
+  unsubscribedAt    DateTime?
+  emailInvalid      Boolean  @default(false)
+  bounceReason      String?
+  isSpamComplaint   Boolean  @default(false)
+  campaignSends     CampaignSendUpdated[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+  @@index([email])
+  @@map("customers")
+}
+
+model CampaignSendUpdated {
+  id              String   @id @default(cuid())
+  campaignId      String
+  campaign        Campaign @relation("CampaignSends", fields: [campaignId], references: [id], onDelete: Cascade)
+  customerId      String
+  customer        Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  sequenceId      String?
+  messageId       String?
+  status          String   @default("pending")
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  openedAt        DateTime?
+  clickedAt       DateTime?
+  repliedAt       DateTime?
+  failureReason   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([campaignId])
+  @@index([customerId])
+  @@index([status])
+  @@map("campaign_sends_updated")
+}
+
+// Phase 2: Advanced Features
+
+model CampaignRecipient {
+  id              String   @id @default(cuid())
+  campaignId      String
+  campaign        Campaign @relation("CampaignRecipients", fields: [campaignId], references: [id], onDelete: Cascade)
+  customerId      String
+  email           String
+  mergeData       Json     @default("{}")
+  segment         String?
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+
+  @@unique([campaignId, customerId])
+  @@index([campaignId])
+  @@index([segment])
+  @@map("campaign_recipients")
+}
+
+model ABTest {
+  id              String   @id @default(cuid())
+  campaignId      String
+  campaign        Campaign @relation("ABTests", fields: [campaignId], references: [id], onDelete: Cascade)
+  userId          String
+  name            String
+  testType        String   @default("subject") // subject, body, sendtime
+  variantA        String   // JSON serialized
+  variantB        String   // JSON serialized
+  splitPercent    Int      @default(50)
+  status          String   @default("draft")
+  winner          String?  // 'A' or 'B'
+  startedAt       DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime @default(now())
+
+  @@index([campaignId])
+  @@index([status])
+  @@map("ab_tests")
+}
+
+model CampaignAutomation {
+  id              String   @id @default(cuid())
+  userId          String
+  campaignId      String?
+  campaign        Campaign? @relation("Automations", fields: [campaignId], references: [id], onDelete: Cascade)
+  name            String
+  description     String?
+  trigger         String   // webhook, email_open, email_click, form_submit, date
+  triggerData     Json     @default("{}")
+  action          String   // send_campaign, send_email, add_tag, update_field
+  actionData      Json     @default("{}")
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([campaignId])
+  @@index([enabled])
+  @@map("campaign_automations")
+}
+
+model CampaignSchedule {
+  id              String   @id @default(cuid())
+  campaignId      String
+  campaign        Campaign @relation("Schedules", fields: [campaignId], references: [id], onDelete: Cascade)
+  sendTime        DateTime
+  timezone        String   @default("UTC")
+  recurring       String?  // daily, weekly, monthly, null for one-time
+  recurringEnd    DateTime?
+  optimizeSendTime Boolean @default(false)
+  createdAt       DateTime @default(now())
+
+  @@unique([campaignId])
+  @@index([sendTime])
+  @@map("campaign_schedules")
+}
+
+model EmailContent {
+  id              String   @id @default(cuid())
+  campaignId      String
+  campaign        Campaign @relation("EmailContents", fields: [campaignId], references: [id], onDelete: Cascade)
+  contentType     String   @default("html") // plaintext, html, rich_text
+  rawContent      String   // Raw HTML/content
+  placeholders    String[] @default([])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([campaignId])
+  @@map("email_contents")
+}
+
+model CampaignAnalytics {
+  id              String   @id @default(cuid())
+  campaignId      String
+  campaign        Campaign @relation("Analytics", fields: [campaignId], references: [id], onDelete: Cascade)
+  dateGenerated   DateTime @default(now())
+  totalSent       Int      @default(0)
+  totalDelivered  Int      @default(0)
+  totalOpened     Int      @default(0)
+  totalClicked    Int      @default(0)
+  totalReplied    Int      @default(0)
+  totalBounced    Int      @default(0)
+  uniqueOpens     Int      @default(0)
+  uniqueClicks    Int      @default(0)
+  avgTimeToOpen   Int?     // seconds
+  avgTimeToClick  Int?     // seconds
+  topLinks        Json     @default("{}")
+  topDevices      Json     @default("{}")
+  topCountries    Json     @default("{}")
+  createdAt       DateTime @default(now())
+
+  @@index([campaignId])
+  @@index([dateGenerated])
+  @@map("campaign_analytics")
+}
+
+model IntegrationConnection {
+  id              String   @id @default(cuid())
+  userId          String
+  type            String   // hubspot, salesforce, slack, zapier
+  name            String
+  apiKey          String   // encrypted in production
+  apiSecret       String?  // encrypted in production
+  metadata        Json     @default("{}")
+  enabled         Boolean  @default(true)
+  lastSyncAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@map("integration_connections")
+}
+
+model ComplianceCheck {
+  id              String   @id @default(cuid())
+  userId          String
+  checkType       String   // spf, dkim, dmarc, spam_score
+  domain          String
+  status          String   @default("pending") // pending, passed, failed
+  result          Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([domain])
+  @@index([checkType])
+  @@map("compliance_checks")
+}
+
+model TeamRole {
+  id              String   @id @default(cuid())
+  userId          String
+  role            String   @default("member") // admin, manager, member
+  permissions     String[] @default([])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@map("team_roles")
+}
+
+model CampaignApproval {
+  id              String   @id @default(cuid())
+  campaignId      String
+  campaign        Campaign @relation("Approvals", fields: [campaignId], references: [id], onDelete: Cascade)
+  requestedBy     String
+  approvedBy      String?
+  status          String   @default("pending") // pending, approved, rejected
+  comments        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([campaignId])
+  @@index([status])
+  @@map("campaign_approvals")
+}
+
+model CampaignMetrics {
+  id              String   @id @default(cuid())
+  campaignId      String
+  campaign        Campaign @relation("Metrics", fields: [campaignId], references: [id], onDelete: Cascade)
+  metricDate      DateTime
+  clicks          Int      @default(0)
+  opens           Int      @default(0)
+  bounces         Int      @default(0)
+  complaints      Int      @default(0)
+  unsubscribes    Int      @default(0)
+  deliveries      Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  @@unique([campaignId, metricDate])
+  @@index([campaignId])
+  @@index([metricDate])
+  @@map("campaign_metrics")
+}
